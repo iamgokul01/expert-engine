@@ -1,0 +1,13 @@
+.tab-btn {
+  background-color: transparent;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  outline: none;
+}
+
+.btn-clicked {
+  color: #fecc3a;
+  border-bottom: 1px solid #fecc3a;
+}
