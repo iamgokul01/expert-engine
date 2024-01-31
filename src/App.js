@@ -253,13 +253,14 @@ const imagesList = [
 class App extends Component {
   state = {
     activeBtn: tabsList[0].tabId,
-    seconds: 59,
+    seconds: 60,
     progress: 'ongoing',
+    randomObj: imagesList[0],
+    score: 0,
   }
 
   componentDidMount = () => {
     this.randomImgFunc()
-
     const timerId = setInterval(() => {
       const {seconds} = this.state
 
@@ -270,6 +271,7 @@ class App extends Component {
       }
       this.setState({
         seconds: seconds - 1,
+        timerId,
       })
     }, 1000)
   }
@@ -296,13 +298,38 @@ class App extends Component {
     })
   }
 
+  selectImg = id => {
+    const {randomObj, timerId} = this.state
+    const imgClickedBool = randomObj.id === id
+    if (imgClickedBool) {
+      this.randomImgFunc()
+      this.setState(prevState => ({
+        score: prevState.score + 1,
+      }))
+    } else {
+      clearInterval(timerId)
+      this.setState({
+        progress: 'over',
+      })
+    }
+  }
+
+  startAgain = () => {
+    this.setState({
+      seconds: 60,
+      progress: 'ongoing',
+      activeBtn: tabsList[0].tabId,
+      score: 0,
+    })
+  }
+
   render() {
-    const {activeBtn, seconds, progress, randomObj} = this.state
+    const {activeBtn, seconds, progress, randomObj, score} = this.state
 
     const activeImgList = this.filterImgList()
     return (
       <div className="app-container">
-        <div className="nav-bar">
+        <nav className="nav-bar">
           <div className="logo-side">
             <img
               src="https://assets.ccbp.in/frontend/react-js/match-game-website-logo.png"
@@ -310,21 +337,20 @@ class App extends Component {
               className="app-logo"
             />
           </div>
-          <div className="score-section">
-            <div className="score-div">
-              <p>Score: </p>
-              <p className="seconds">0</p>
-            </div>
-            <div className="score-div">
+          <ul className="score-section">
+            <li className="score-div">
+              <p>Score: {score} </p>
+            </li>
+            <li className="score-div">
               <img
                 className="timer-logo"
                 alt="timer"
                 src="https://assets.ccbp.in/frontend/react-js/match-game-timer-img.png"
               />
-              <p className="seconds">{seconds} secs</p>
-            </div>
-          </div>
-        </div>
+              <p className="seconds">{seconds} sec</p>
+            </li>
+          </ul>
+        </nav>
 
         <div className="main-content-section">
           <div
@@ -335,7 +361,7 @@ class App extends Component {
             }
           >
             <div className="random-image">
-              <img className="img-ques" alt="" src="" />
+              <img className="img-ques" alt="match" src={randomObj.imageUrl} />
             </div>
             <div className="tabs-section">
               <ul className="tabs-btn-list">
@@ -353,14 +379,20 @@ class App extends Component {
             <div className="img-answer-section">
               <ul className="answer-img-section">
                 {activeImgList.map(each => (
-                  <Images data={each} key={each.id} />
+                  <Images
+                    activeImgData={each}
+                    selectImg={this.selectImg}
+                    key={each.id}
+                  />
                 ))}
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="result-flex-box">
+        <div
+          className={progress === 'over' ? 'result-flex-box' : 'hide-container'}
+        >
           <div className="result-container">
             <div className="result-section">
               <img
@@ -368,19 +400,19 @@ class App extends Component {
                 alt="trophy"
                 className="trophy"
               />
-              <h1 className="section-label">YOUR SCORE</h1>
-              <p className="score">0</p>
+              <p className="section-label">YOUR SCORE</p>
+              <p className="score">{score}</p>
 
               <button
                 type="button"
                 className="play-btn"
-                onClick={this.resetGame}
+                onClick={this.startAgain}
               >
                 <img
                   src="https://assets.ccbp.in/frontend/react-js/match-game-play-again-img.png "
                   alt="reset"
                 />
-                Play Again
+                PLAY AGAIN
               </button>
             </div>
           </div>

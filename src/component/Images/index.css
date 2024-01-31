@@ -1,8 +1,13 @@
 .image-container {
   display: flex;
-  width: 20%;
+  width: 250px;
   justify-content: center;
+  flex: 1 / 5;
 }
 .images-list {
   width: 40%;
+}
+
+.thumbnail-container {
+  background-color: transparent;
 }
